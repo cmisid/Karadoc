@@ -12,6 +12,9 @@ class MetadataProcessor(Base):
             file_token='*.xml'
         )
 
+    def parse(self):
+        raise NotImplementedError
+
     def run(self, size=20):
 
         vectorizer = HashingVectorizer(non_negative=True)
@@ -19,4 +22,4 @@ class MetadataProcessor(Base):
         stream = self.stream_files()
 
         for minibatch in self.iter_minibatches(stream, size):
-            print(len(minibatch))
+            print(minibatch)
