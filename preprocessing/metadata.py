@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from sklearn.feature_extraction.text import HashingVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 from .base import Base
 from .util import apply_func_dict_values
@@ -46,14 +46,14 @@ class MetadataProcessor(Base):
         )
         return apply_func_dict_values(features, remove_extra_html_tags)
 
-    def run(self, size=5):
+    def run(self, size=20):
 
-        vectorizer = HashingVectorizer(non_negative=True)
+        vectorizer = TfidfVectorizer()
 
         stream = self.stream_files()
 
         for minibatch in self.iter_minibatches(stream, size):
-            print('NEW BATCH')
-            for m in minibatch:
-                print('--------------')
-                print(m)
+            X_train = vectorizer.fit_transform((
+                doc['description'] for doc in minibatch
+            ))
+            print(type(X_train))

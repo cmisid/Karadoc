@@ -31,3 +31,7 @@ Install python dependencies with :
 ```
 pip install -r requirements.txt
 ```
+
+# Architecture
+
+![modules](https://docs.google.com/drawings/d/1A56i6HXJhikkHOtVfNO4qoF10zZ_d4SD5ztqsPuY-EA/pub?w=1094&h=1026)
