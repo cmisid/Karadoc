@@ -5,6 +5,7 @@ from .base import Base
 from .util import apply_func_dict_values
 from .util import remove_extra_html_tags
 
+
 class MetadataProcessor(Base):
 
     """Metadata processor"""
@@ -28,12 +29,20 @@ class MetadataProcessor(Base):
         description = soup.find('description').get_text()
         duration = soup.find('duration').get_text()
         size = soup.find('size').get_text()
+        explicit = soup.find('explicit').get_text()
+        keywords = [
+            tag.string
+            for tag in soup.find('tags')
+            if tag.string != '\n'
+        ]
 
         features = dict(
             title=title,
             description=description,
             duration=duration,
-            size=size
+            size=size,
+            explicit=explicit,
+            keywords=keywords
         )
         return apply_func_dict_values(features, remove_extra_html_tags)
 
