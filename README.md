@@ -1,6 +1,6 @@
 # Karadoc :hamburger:
 
-:movie_camera: :sound: :page_facing_up: TAGGING VIDEOS
+:movie_camera: :sound: :page_facing_up: TOOL USED TO TAG SOME VIDEOS OF MEDIALEVAL CHALLENGE
 
 <p align="center">
   <a href="https://pbs.twimg.com/profile_images/650415117570543616/C7Y4mLPk.jpg">
