@@ -1,5 +1,7 @@
+import pandas as pd
+
 from preprocessing.metadata import MetadataProcessor
 
 
 processor = MetadataProcessor('data/metadata/')
-processor.run()
+features = processor.run()
