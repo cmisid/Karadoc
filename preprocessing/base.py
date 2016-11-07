@@ -15,8 +15,7 @@ class Base():
     def stream_files(self):
         """Stream files one by one."""
         for filename in glob(os.path.join(self.data_path, self.file_token)):
-            for doc in self.parse(open(filename, 'r')):
-                yield doc
+            yield self.parse(open(filename, 'r').read())
 
     def get_minibatch(self, stream, size):
         """A minibatch is a stream slice."""
