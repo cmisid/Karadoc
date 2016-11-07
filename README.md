@@ -15,14 +15,14 @@
 
 Create a new virtual environment:
 ```
-conda create -n MediaEval python=3
+conda create -n karadoc python=3
 ```
 Then, launch it with:
 ```
 # Linux and Mac OS X
-source activate MediaEval
+source activate karadoc
 # Windows
-activate MediaEval
+activate karadoc
 ```
 
 ## Dependencies
