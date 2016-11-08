@@ -9,8 +9,11 @@ URL = 'https://fr.wikiquote.org/wiki/Kaamelott/Karadoc'
 
 
 def parse_wikiquote():
+	""" Crawl Karadoc wikiquote page to retrieve his most famous quotes. """
+
     response = requests.get(URL)
     assert response.status_code
+    
     soup = BeautifulSoup(response.text, 'html.parser')
 
     clean = lambda x: x.replace('\xa0', '')
@@ -29,6 +32,10 @@ def parse_wikiquote():
 
 
 def random_quote():
+	""" Compute a random choice between a list of famous quotes 
+	and print them to stdout.
+	"""
+
     quotes = parse_wikiquote()
     quote, ref = random.choice(quotes)
     click.secho(quote, blink=True, fg='cyan')

@@ -11,7 +11,7 @@ from .util import remove_extra_html_tags
 
 class MetadataProcessor(Base):
 
-    """Metadata processor"""
+    """ Metadata processor """
 
     def __init__(self, input_path='data/metadata', output_path='features/metadata'):
         super(MetadataProcessor, self).__init__(
@@ -21,7 +21,7 @@ class MetadataProcessor(Base):
         )
 
     def parse(self, doc):
-        """Extract some components of a metadata video XML file
+        """ Extract some components of a metadata video XML file
         Args:
             doc (str): file that has been opened
         Returns:

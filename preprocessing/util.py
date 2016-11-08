@@ -2,7 +2,7 @@ import re
 
 
 def remove_extra_html_tags(raw_html):
-    """Remove extra HTML tags from a string already parsed by BeautifulSoup.
+    """ Remove extra HTML tags from a string already parsed by BeautifulSoup.
     Args:
         raw_html (str): A text containing HTML tags
     Returns:
@@ -13,7 +13,7 @@ def remove_extra_html_tags(raw_html):
 
 
 def apply_func_dict_values(hash, f):
-    """Method to apply a function to all hash values
+    """ Method to apply a function to all hash values
     Args:
         hash (dict): The dictionnary where you want to apply a custom function
             on values.
