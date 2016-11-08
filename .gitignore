@@ -1,6 +1,8 @@
 .cache/
+*.jpg
 *.xml
 *.csv
 *.tar
 *.pyc
+
 .DS_Store
