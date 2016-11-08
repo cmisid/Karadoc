@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-	<img alt="cover" src="img/cover">
+	<img alt="cover" src="img/cover.png">
 </p>
 
 # Installation
