@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-	<img alt="karadoc" src="https://pbs.twimg.com/profile_images/650415117570543616/C7Y4mLPk.jpg">
+	<img alt="cover" src="img/cover.png">
 </p>
 
 # Installation
@@ -41,3 +41,8 @@ pip install -r requirements.txt
 # Architecture
 
 ![modules](https://docs.google.com/drawings/d/1A56i6HXJhikkHOtVfNO4qoF10zZ_d4SD5ztqsPuY-EA/pub?w=1094&h=1026)
+
+1. :green_heart: : **Module de preprocessing**. On extrait des jeux de données plusieurs matrices contenant des features.
+2. :yellow_heart: : **Module d'apprentissage**. A partir des matrices de features, on entraîne des classifieurs qu'on sauvegarde par la suite.
+3. :blue_heart: **Module de classification**. On peut classifier des nouveaux documents en utilisant le module de preprocessing puis en utilisant les classifieurs sauvegardés.
+
