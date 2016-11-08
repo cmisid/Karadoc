@@ -3,6 +3,12 @@
 :movie_camera: :sound: :page_facing_up: TOOL USED TO TAG SOME VIDEOS OF MEDIAEVAL CHALLENGE
 
 <p align="center">
+  <a href="https://travis-ci.org/cmisid/Karadoc">
+    <img alt="Build Status" src="https://travis-ci.org/cmisid/Karadoc.svg?branch=master">
+  </a>
+</p>
+
+<p align="center">
 	<img alt="karadoc" src="https://pbs.twimg.com/profile_images/650415117570543616/C7Y4mLPk.jpg">
 </p>
 

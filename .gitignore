@@ -2,3 +2,4 @@ data/
 *.tar
 *.pyc
 .DS_Store
+.cache
