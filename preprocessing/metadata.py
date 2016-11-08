@@ -8,6 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from .base import Base
 from .util import apply_func_dict_values
 from .util import remove_extra_html_tags
+from .util import filename_without_extension
 
 
 class MetadataProcessor(Base):
@@ -38,7 +39,7 @@ class MetadataProcessor(Base):
         ]
 
         document = dict(
-            filename=soup.find('filename').get_text(),
+            filename=filename_without_extension(soup.find('filename').get_text()),
             title=soup.find('title').get_text(),
             description=soup.find('description').get_text(),
             duration=soup.find('duration').get_text(),
