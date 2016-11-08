@@ -22,4 +22,4 @@ def apply_func_dict_values(hash, f):
         dict: containing all input hash items after applying the function f
             on values.
     """
-    return dict((k, f(v)) if not isinstance(v, dict) and not isinstance(v, list) else (k, v) for k, v in hash.items())
+    return dict((k, f(v)) if isinstance(v, str) else (k, v) for k, v in hash.items())

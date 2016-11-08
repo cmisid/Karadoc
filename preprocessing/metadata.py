@@ -26,24 +26,32 @@ class MetadataProcessor(Base):
         """
         soup = BeautifulSoup(doc, 'html.parser')
         # Feature extraction
+        filename = soup.find('filename').get_text()
         title = soup.find('title').get_text()
         description = soup.find('description').get_text()
         duration = soup.find('duration').get_text()
-        size = soup.find('size').get_text()
+        size = int(soup.find('size').get_text())
         explicit = soup.find('explicit').get_text()
         keywords = [
             tag.string
             for tag in soup.find('tags')
             if tag.string != '\n'
         ]
+        licence = soup.find('licence').get_text()
+        uploader = soup.find('uploader')
+        uid = int(uploader.uid.get_text())
+        login = uploader.login.get_text()
 
         features = dict(
+            filename=filename,
             title=title,
             description=description,
             duration=duration,
             size=size,
             explicit=explicit,
-            keywords=keywords
+            keywords=keywords,
+            uploader_id=uid,
+            uploader_login=login
         )
         return apply_func_dict_values(features, remove_extra_html_tags)
 
