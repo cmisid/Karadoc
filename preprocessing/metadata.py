@@ -74,5 +74,9 @@ class MetadataProcessor(Base):
                 columns=vectorizer.get_feature_names()
             ))
 
+        features = pd.DataFrame()
+
         term_frequency_dfs = pd.concat(term_frequency_dfs).fillna(0)
         term_frequency_dfs.to_csv(os.path.join(self.output_path, 'term_frequencies.csv'))
+
+    # TODO: Keywords occurence matrix
