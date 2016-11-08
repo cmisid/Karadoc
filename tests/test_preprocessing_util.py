@@ -52,5 +52,5 @@ def test_apply_func_dict_values_success(dict_with_html_tags):
         dict_with_html_tags, function)
     cleaned_dict.should.be.a(dict)
     for k, v in cleaned_dict.items():
-        if not isinstance(v, dict) and not isinstance(v, list):
+        if isinstance(v, str):
             v.should.be.equal(preprocessing.util.remove_extra_html_tags(v))
