@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
-from sklearn.feature_extraction.text import TfidfVectorizer
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
 
 from .base import Base
 from .util import apply_func_dict_values
@@ -10,9 +11,9 @@ class MetadataProcessor(Base):
 
     """Metadata processor"""
 
-    def __init__(self, data_path):
+    def __init__(self, input_path):
         super(MetadataProcessor, self).__init__(
-            data_path=data_path,
+            input_path=input_path,
             file_token='*.xml'
         )
 
@@ -46,14 +47,20 @@ class MetadataProcessor(Base):
         )
         return apply_func_dict_values(features, remove_extra_html_tags)
 
-    def run(self, size=20):
+    def run(self, output_path, batch_size=100):
 
-        vectorizer = TfidfVectorizer()
+        vectorizer = CountVectorizer()
+        term_frequency_dfs = []
 
-        stream = self.stream_files()
-
-        for minibatch in self.iter_minibatches(stream, size):
-            X_train = vectorizer.fit_transform((
+        for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
+            # 1. Extract term frequencies
+            term_frequencies = vectorizer.fit_transform((
                 doc['description'] for doc in minibatch
             ))
-            print(type(X_train))
+            term_frequency_dfs.append(pd.DataFrame(
+                term_frequencies.todense(),
+                index=(doc['title'] for doc in minibatch),
+                columns=vectorizer.get_feature_names()
+            ))
+
+        return pd.concat(term_frequency_dfs).fillna(0)
