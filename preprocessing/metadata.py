@@ -1,3 +1,5 @@
+import os
+
 from bs4 import BeautifulSoup
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
@@ -11,10 +13,11 @@ class MetadataProcessor(Base):
 
     """Metadata processor"""
 
-    def __init__(self, input_path):
+    def __init__(self, input_path='data/metadata', output_path='features/metadata'):
         super(MetadataProcessor, self).__init__(
+            file_token='*.xml',
             input_path=input_path,
-            file_token='*.xml'
+            output_path=output_path
         )
 
     def parse(self, doc):
@@ -37,7 +40,7 @@ class MetadataProcessor(Base):
             for tag in soup.find('tags')
             if tag.string != '\n'
         ]
-        licence = soup.find('licence').get_text()
+        #licence = soup.find('licence').get_text()
         uploader = soup.find('uploader')
         uid = int(uploader.uid.get_text())
         login = uploader.login.get_text()
@@ -55,7 +58,7 @@ class MetadataProcessor(Base):
         )
         return apply_func_dict_values(features, remove_extra_html_tags)
 
-    def run(self, output_path, batch_size=100):
+    def run(self, batch_size=100):
 
         vectorizer = CountVectorizer()
         term_frequency_dfs = []
@@ -71,4 +74,5 @@ class MetadataProcessor(Base):
                 columns=vectorizer.get_feature_names()
             ))
 
-        return pd.concat(term_frequency_dfs).fillna(0)
+        term_frequency_dfs = pd.concat(term_frequency_dfs).fillna(0)
+        term_frequency_dfs.to_csv(os.path.join(self.output_path, 'term_frequencies.csv'))

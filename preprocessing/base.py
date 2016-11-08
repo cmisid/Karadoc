@@ -5,16 +5,20 @@ import os
 
 class Base():
 
-    def __init__(self, data_path, file_token):
-        self.data_path = data_path
+    def __init__(self, file_token, input_path, output_path):
         self.file_token = file_token
+        self.input_path = input_path
+        self.output_path = output_path
 
     def parse(self, doc):
         raise NotImplementedError
 
+    def run(self):
+        raise NotImplementedError
+
     def stream_files(self):
         """Stream files one by one."""
-        for filename in glob(os.path.join(self.data_path, self.file_token)):
+        for filename in glob(os.path.join(self.input_path, self.file_token)):
             yield self.parse(open(filename, 'r').read())
 
     def get_minibatch(self, stream, size):
@@ -27,6 +31,3 @@ class Base():
         while len(minibatch):
             yield minibatch
             minibatch = self.get_minibatch(stream, minibatch_size)
-
-    def run(self):
-        raise NotImplementedError
