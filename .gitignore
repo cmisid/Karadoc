@@ -1,6 +1,11 @@
+__pycache__/
+.DS_Store
 .cache/
-data/
+
+*.jpg
+*.xml
 *.csv
 *.tar
 *.pyc
-.DS_Store
+
+
