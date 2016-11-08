@@ -36,7 +36,8 @@ class MetadataProcessor(Base):
             for tag in soup.find('tags')
             if tag.string != '\n'
         ]
-        licence = soup.find('licence').get_text()
+        licence = soup.find('licence').get_text(
+        ) if soup.find('licence') else ''
         uploader = soup.find('uploader')
         uid = int(uploader.uid.get_text())
         login = uploader.login.get_text()
