@@ -21,7 +21,7 @@
 
 Create a new virtual environment:
 ```
-conda create -n karadoc python=3
+conda create -n karadoc numpy scipy scikit-learn matplotlib python=3
 ```
 Then, launch it with:
 ```
@@ -48,7 +48,12 @@ We built a preprocessing tool for extracting raw data from the various media fil
 
 - **metadata**
     - `features.csv`: filename, duration, explicit, licence, size, title, uploader_id, uploader_login
-    - `tf_description.csv`: term frequencies for the video description
+    - `tf_description.csv`: term frequencies for the video descriptions
+    - `tf_keywords.csv`: term frequencies for the video keywords
+    - `tf_titles.csv`: term frequencies for the video titles
+- **shots**
+- **trans**
+- **videos**
 
 ## Notebooks
 
