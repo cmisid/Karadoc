@@ -21,6 +21,14 @@ class Base():
         for filename in glob(os.path.join(self.input_path, self.file_token)):
             yield self.parse(open(filename, 'r').read())
 
+    def shots_img(self):
+        """ Generator of images """
+        for folder, sub_folder, files in os.walk(self.input_path):
+            for file in files:
+                file_path = os.path.join(folder, file)
+                if file_path.endswith(self.file_token):
+                    yield file_path
+
     def get_minibatch(self, stream, size):
         """A minibatch is a stream slice."""
         return [doc for doc in itertools.islice(stream, size)]
