@@ -39,12 +39,25 @@ def random_quote():
     quotes = parse_wikiquote()
     quote, ref = random.choice(quotes)
     click.secho(quote, blink=True, fg='cyan')
-    click.secho('{}--- {}'.format('\t' * 3, ref), blink=True, fg='white')
+    click.secho('{}--- {}'.format('\t' * 3, ref), fg='white')
+
+
+def render_karadoc():
+    logo = ''' _   __  ___  ______   ___  ______  _____  _____ 
+| | / / / _ \ | ___ \ / _ \ |  _  \|  _  |/  __ \ 
+| |/ / / /_\ \| |_/ // /_\ \| | | || | | || /  \/ 
+|    \ |  _  ||    / |  _  || | | || | | || |    
+| |\  \| | | || |\ \ | | | || |/ / \ \_/ /| \__/\ 
+\_| \_/\_| |_/\_| \_|\_| |_/|___/   \___/  \____/ 
+    '''
+    click.secho(str(logo), fg='yellow', bold=True)
+    click.secho('{}--- {}'.format('\t' * 1, 'TAGGING VIDEOS (MEDIAEVAL CHALLENGE)'), fg='white')
 
 
 @click.command()
 @click.option('--quote/--no-quote', help='Try me ;)', default=False)
 def karadoc(quote):
+    render_karadoc()
     if quote:
         random_quote()
 

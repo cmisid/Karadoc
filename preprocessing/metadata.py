@@ -61,42 +61,50 @@ class MetadataProcessor(Base):
         title_frequency_dfs = []
         features_dfs = []
 
-        for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
-            # 1. Extract term frequencies
-            term_frequencies = vectorizer.fit_transform((
-                doc['description'] for doc in minibatch
-            ))
-            term_frequency_dfs.append(pd.DataFrame(
-                term_frequencies.todense(),
-                index=(doc['filename'] for doc in minibatch),
-                columns=vectorizer.get_feature_names()
-            ))
-            # 2. Extract features from documents
-            df_batch_features = pd.DataFrame(minibatch)
-            df_batch_features.set_index('filename', inplace=True)
-            columns_to_delete = ['description', 'keywords']
-            df_batch_features.drop(columns_to_delete, axis=1, inplace=True)
-            features_dfs.append(df_batch_features)
+        minibatches = list(self.iter_minibatches(self.stream_files(), batch_size))
+        click.secho('Iterating through batch files', fg='cyan')
+        with click.progressbar(minibatches, label='Extracting metadatas', length=len(minibatches)) as bar:
+            for minibatch in bar:
+                # 1. Extract term frequencies
+                term_frequencies = vectorizer.fit_transform((
+                    doc['description'] for doc in minibatch
+                ))
+                term_frequency_dfs.append(pd.DataFrame(
+                    term_frequencies.todense(),
+                    index=(doc['filename'] for doc in minibatch),
+                    columns=vectorizer.get_feature_names()
+                ))
 
-            # 3. Extract keywords frequencies
-            keyword_frequencies = vectorizer.fit_transform((
-                " ".join(doc['keywords']) for doc in minibatch
-            ))
-            keyword_frequency_dfs.append(pd.DataFrame(
-                keyword_frequencies.todense(),
-                index=(doc['filename'] for doc in minibatch),
-                columns=vectorizer.get_feature_names()
-            ))
+                # 2. Extract keywords frequencies
+                # CountVectoriser() takes a string as input arg so we
+                # need to join keywords formatted as list
+                keyword_frequencies = vectorizer.fit_transform((
+                    " ".join(doc['keywords']) for doc in minibatch
+                ))
+                keyword_frequency_dfs.append(pd.DataFrame(
+                    keyword_frequencies.todense(),
+                    index=(doc['filename'] for doc in minibatch),
+                    columns=vectorizer.get_feature_names()
+                ))
 
-            # 4. Extract title frequencies
-            title_frequencies = vectorizer.fit_transform((
-                doc['title'] for doc in minibatch
-            ))
-            title_frequency_dfs.append(pd.DataFrame(
-                title_frequencies.todense(),
-                index=(doc['filename'] for doc in minibatch),
-                columns=vectorizer.get_feature_names()
-            ))
+                # 3. Extract title frequencies
+                title_frequencies = vectorizer.fit_transform((
+                    doc['title'] for doc in minibatch
+                ))
+                title_frequency_dfs.append(pd.DataFrame(
+                    title_frequencies.todense(),
+                    index=(doc['filename'] for doc in minibatch),
+                    columns=vectorizer.get_feature_names()
+                ))
+
+                # 4. Extract features from documents
+                df_batch_features = pd.DataFrame(minibatch)
+                df_batch_features.set_index('filename', inplace=True)
+                columns_to_delete = ['description', 'keywords']
+                df_batch_features.drop(columns_to_delete, axis=1, inplace=True)
+                features_dfs.append(df_batch_features)
+
+            click.secho('\nSaving term frequencies and metadata features', fg='cyan')
 
         features_dfs = pd.concat(features_dfs, axis=0, ignore_index=False)
         features_dfs.to_csv(os.path.join(self.output_path, 'features.csv'))
@@ -106,6 +114,3 @@ class MetadataProcessor(Base):
         keyword_frequency_dfs.to_csv(os.path.join(self.output_path, 'tf_keywords.csv'))
         title_frequency_dfs = pd.concat(title_frequency_dfs).fillna(0)
         title_frequency_dfs.to_csv(os.path.join(self.output_path, 'tf_titles.csv'))
-
-    # TODO: Keywords occurence matrix
-    # liste de phrases concaténées + index filename
