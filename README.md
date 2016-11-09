@@ -40,13 +40,15 @@ pip install -r requirements.txt
 
 # Architecture
 
-## Modules
-
 ![modules](https://docs.google.com/drawings/d/1A56i6HXJhikkHOtVfNO4qoF10zZ_d4SD5ztqsPuY-EA/pub?w=1094&h=1026)
 
-1. :green_heart: **Module de preprocessing**. A partir des différents jeux de données, on extrait plusieurs matrices contenant des features.
-2. :yellow_heart: **Module d'apprentissage**. A partir des matrices de features, on entraîne des classifieurs qu'on sauvegarde par la suite.
-3. :blue_heart: **Module de classification**. On peut classifier des nouveaux documents en utilisant le module de preprocessing puis en faisant appel aux classifieurs sauvegardés.
+## Preprocessing
+
+We built a preprocessing tool for extracting raw data from the various media files that were provided. The tool outputs CSV files into a *features* folder which can be accessed for statistical analysis.
+
+## Notebooks
+
+
 
 ## Traitement en minibatchs
 
