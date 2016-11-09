@@ -56,8 +56,10 @@ def render_karadoc():
 
 @click.command()
 @click.option('--quote/--no-quote', help='Try me ;)', default=False)
-def karadoc(quote):
-    render_karadoc()
+@click.option('--verbose/--no-verbose', '-v', help='Verbose output', default=False)
+def karadoc(quote, verbose):
+    if verbose:
+        render_karadoc()
     if quote:
         random_quote()
 

@@ -21,7 +21,7 @@
 
 Create a new virtual environment:
 ```
-conda create -n karadoc python=3
+conda create -n karadoc numpy scipy scikit-learn matplotlib python=3
 ```
 Then, launch it with:
 ```
