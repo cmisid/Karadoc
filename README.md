@@ -31,7 +31,7 @@ source activate karadoc
 activate karadoc
 ```
 
-Since you are inside the virtual env, you can install OpenCV (Open Source library for Computer Vision): 
+Since you are inside the virtual env, you can install OpenCV (Open Source library for Computer Vision):
 ```
 conda install -c https://conda.binstar.org/menpo opencv3
 ```
@@ -49,7 +49,7 @@ pip install -r requirements.txt
 
 ## Preprocessing
 
-We built a preprocessing tool for extracting raw data from the various media files that were provided. The tool outputs CSV files into a *features* folder which can be accessed for statistical analysis. The CSV files that we can extract are the following:
+We built a preprocessing tool for extracting raw data from the various media files that are available. The tool outputs CSV files into a *features/* folder which can be accessed for statistical analysis. The CSV files that we can extract are the following:
 
 - **metadata**
     - `features.csv`: filename, duration, explicit, licence, size, title, uploader_id, uploader_login
