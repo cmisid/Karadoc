@@ -31,6 +31,11 @@ source activate karadoc
 activate karadoc
 ```
 
+Since you are inside the virtual env, you can install OpenCV (Open Source library for Computer Vision): 
+```
+conda install -c https://conda.binstar.org/menpo opencv3
+```
+
 ## Dependencies
 
 Install python dependencies with:
