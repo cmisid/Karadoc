@@ -1,7 +1,7 @@
 import os
 
-
 from bs4 import BeautifulSoup
+import click
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 
@@ -57,6 +57,8 @@ class MetadataProcessor(Base):
 
         vectorizer = CountVectorizer()
         term_frequency_dfs = []
+        keyword_frequency_dfs = []
+        title_frequency_dfs = []
         features_dfs = []
 
         for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
@@ -76,9 +78,34 @@ class MetadataProcessor(Base):
             df_batch_features.drop(columns_to_delete, axis=1, inplace=True)
             features_dfs.append(df_batch_features)
 
+            # 3. Extract keywords frequencies
+            keyword_frequencies = vectorizer.fit_transform((
+                " ".join(doc['keywords']) for doc in minibatch
+            ))
+            keyword_frequency_dfs.append(pd.DataFrame(
+                keyword_frequencies.todense(),
+                index=(doc['filename'] for doc in minibatch),
+                columns=vectorizer.get_feature_names()
+            ))
+
+            # 4. Extract title frequencies
+            title_frequencies = vectorizer.fit_transform((
+                doc['title'] for doc in minibatch
+            ))
+            title_frequency_dfs.append(pd.DataFrame(
+                title_frequencies.todense(),
+                index=(doc['filename'] for doc in minibatch),
+                columns=vectorizer.get_feature_names()
+            ))
+
         features_dfs = pd.concat(features_dfs, axis=0, ignore_index=False)
         features_dfs.to_csv(os.path.join(self.output_path, 'features.csv'))
         term_frequency_dfs = pd.concat(term_frequency_dfs).fillna(0)
         term_frequency_dfs.to_csv(os.path.join(self.output_path, 'tf_description.csv'))
+        keyword_frequency_dfs = pd.concat(keyword_frequency_dfs).fillna(0)
+        keyword_frequency_dfs.to_csv(os.path.join(self.output_path, 'tf_keywords.csv'))
+        title_frequency_dfs = pd.concat(title_frequency_dfs).fillna(0)
+        title_frequency_dfs.to_csv(os.path.join(self.output_path, 'tf_titles.csv'))
 
     # TODO: Keywords occurence matrix
+    # liste de phrases concaténées + index filename
