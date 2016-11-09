@@ -1,7 +1,9 @@
+import os
+import re
+
 import base64
 import hashlib
 import hmac
-import re
 
 
 def remove_extra_html_tags(raw_html):
@@ -39,3 +41,8 @@ def make_hash(string, hash_key='karadoc'):
                       msg=bytes(string, 'utf-8'),
                       digestmod=hashlib.sha256).hexdigest()
     return str(digest)
+
+
+def filename_without_extension(filename):
+    """ Extract the filename and remove the file extension (eg .jpg) """
+    return os.path.splitext(filename)[0]
