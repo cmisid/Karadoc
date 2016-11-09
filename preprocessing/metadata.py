@@ -66,7 +66,7 @@ class MetadataProcessor(Base):
             ))
             term_frequency_dfs.append(pd.DataFrame(
                 term_frequencies.todense(),
-                index=(doc['title'] for doc in minibatch),
+                index=(doc['filename'] for doc in minibatch),
                 columns=vectorizer.get_feature_names()
             ))
             # 2. Extract features from documents
@@ -78,7 +78,7 @@ class MetadataProcessor(Base):
 
         features_dfs = pd.concat(features_dfs, axis=0, ignore_index=False)
         features_dfs.to_csv(os.path.join(self.output_path, 'features.csv'))
-        term_frequency_dfs = pd.concat(term_frequency_dfs, 0)
-        term_frequency_dfs.to_csv(os.path.join(self.output_path, 'term_frequencies.csv'))
+        term_frequency_dfs = pd.concat(term_frequency_dfs).fillna(0)
+        term_frequency_dfs.to_csv(os.path.join(self.output_path, 'tf_description.csv'))
 
     # TODO: Keywords occurence matrix
