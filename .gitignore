@@ -9,4 +9,6 @@ __pycache__/
 *.tar
 *.pyc
 
+!data/classifiers/*.xml
+
 extract_tags.py
