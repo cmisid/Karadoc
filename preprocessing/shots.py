@@ -29,7 +29,7 @@ class ShotsProcessor(Base):
                 if file_path.endswith('.jpg'):
                     yield file_path
 
-    def compute_face_recognition(self, shot=None, cascade_classifier='haarcascade_frontalface_default.xml', scale_factor=1.3, min_neighbors=5):
+    def compute_feature_detection(self, shot=None, cascade_classifier='haarcascade_frontalface_default.xml', scale_factor=1.3, min_neighbors=5):
         """ Detect faces in the image """
 
         # Read image
@@ -61,6 +61,6 @@ class ShotsProcessor(Base):
     def run(self):
 
         # Extract the number of faces for each shot
-        nb_faces = [self.compute_face_recognition(shot) for shot in self.shots_img()]
+        nb_faces = [self.compute_feature_detection(shot) for shot in self.shots_img()]
         faces_df = pd.DataFrame(nb_faces)
         faces_df.to_csv(os.path.join(self.output_path, 'faces_df.csv'))
