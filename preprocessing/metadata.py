@@ -1,3 +1,4 @@
+import glob
 import os
 
 from bs4 import BeautifulSoup
@@ -21,6 +22,11 @@ class MetadataProcessor(Base):
             input_path=input_path,
             output_path=output_path
         )
+
+    def stream_files(self):
+        """Stream files one by one."""
+        for filename in glob.glob(os.path.join(self.input_path, self.file_token)):
+            yield self.parse(open(filename, 'r').read())
 
     def parse(self, doc):
         """ Extract some components of a metadata video XML file
@@ -61,7 +67,7 @@ class MetadataProcessor(Base):
         titles_tf_dfs = []
         attributes_dfs = []
 
-        click.secho('Iterating through files to extract metadata', fg='blue', bold=True)
+        click.secho('Iterating through files to extract metadata...', fg='blue', bold=True)
         for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
             # 1. Extract term frequencies
             descriptions_tf = vectorizer.fit_transform((
@@ -104,7 +110,7 @@ class MetadataProcessor(Base):
 
         click.secho('Saving metadata features', fg='cyan')
         attributes_dfs = pd.concat(attributes_dfs, axis=0, ignore_index=False)
-        attributes_dfs.to_csv(os.path.join(self.output_path, 'features.csv'))
+        attributes_dfs.to_csv(os.path.join(self.output_path, 'attributes.csv'))
 
         click.secho('Saving term frequencies', fg='cyan')
         descriptions_tf_dfs = pd.concat(descriptions_tf_dfs).fillna(0)

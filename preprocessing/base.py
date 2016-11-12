@@ -1,6 +1,4 @@
-from glob import glob
 import itertools
-import os
 
 
 class Base():
@@ -13,13 +11,11 @@ class Base():
     def parse(self, doc):
         raise NotImplementedError
 
-    def run(self):
+    def run(self, **kwargs):
         raise NotImplementedError
 
     def stream_files(self):
-        """Stream files one by one."""
-        for filename in glob(os.path.join(self.input_path, self.file_token)):
-            yield self.parse(open(filename, 'r').read())
+        raise NotImplementedError
 
     def get_minibatch(self, stream, size):
         """A minibatch is a stream slice."""

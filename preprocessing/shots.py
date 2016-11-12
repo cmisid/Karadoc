@@ -21,7 +21,7 @@ class ShotsProcessor(Base):
         )
         self.cascade_classifier_path = os.path.join('data', 'classifiers')
 
-    def shots_img(self):
+    def stream_files(self):
         """ Generator of image path """
         for folder, sub_folder, files in os.walk(self.input_path):
             for file in files:
@@ -61,6 +61,6 @@ class ShotsProcessor(Base):
     def run(self):
 
         # Extract the number of faces for each shot
-        nb_faces = [self.compute_feature_detection(shot) for shot in self.shots_img()]
+        nb_faces = [self.compute_feature_detection(shot) for shot in self.stream_files()]
         faces_df = pd.DataFrame(nb_faces)
         faces_df.to_csv(os.path.join(self.output_path, 'faces_df.csv'))
