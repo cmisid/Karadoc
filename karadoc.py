@@ -10,36 +10,39 @@ URL = 'https://fr.wikiquote.org/wiki/Kaamelott/Karadoc'
 
 def parse_wikiquote():
     """ Crawl Karadoc wikiquote page to retrieve his most famous quotes. """
+    try:
+        response = requests.get(URL)
+    except requests.exceptions.ConnectionError:
+        print("Refused connection or DNS failure")
+    except requests.exceptions.HTTPError:
+        print("Invalid HTTP response")
+    except requests.exceptions.TooManyRedirects:
+        print("The request exceeds the configured number of maximum redirections")
+    else:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        clean = lambda x: x.replace('\xa0', '')
+        citations = [
+            clean(citation.get_text())
+            for citation in soup.find_all('span', attrs={'class': 'citation'})
+        ]
+        references = [
+            clean(ref.get_text())
+            for ref in soup.find_all('div', attrs={'class': 'ref'})
+        ]
+        return list(zip(citations, references))
 
-    response = requests.get(URL)
-    assert response.status_code
-
-    soup = BeautifulSoup(response.text, 'html.parser')
-
-    clean = lambda x: x.replace('\xa0', '')
-
-    citations = [
-        clean(citation.get_text())
-        for citation in soup.find_all('span', attrs={'class': 'citation'})
-    ]
-
-    references = [
-        clean(ref.get_text())
-        for ref in soup.find_all('div', attrs={'class': 'ref'})
-    ]
-
-    return list(zip(citations, references))
+    return
 
 
 def random_quote():
     """ Compute a random choice between a list of famous quotes 
     and print them to stdout.
     """
-
     quotes = parse_wikiquote()
-    quote, ref = random.choice(quotes)
-    click.secho(quote, blink=True, fg='cyan')
-    click.secho('{}--- {}'.format('\t' * 3, ref), fg='white')
+    if quotes:
+        quote, ref = random.choice(quotes)
+        click.secho(quote, blink=True, fg='cyan')
+        click.secho('{}--- {}'.format('\t' * 3, ref), fg='white')
 
 
 def render_karadoc():

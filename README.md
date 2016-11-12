@@ -33,6 +33,7 @@ activate karadoc
 
 Since you are inside the virtual env, you can install OpenCV (Open Source library for Computer Vision):
 ```
+conda update hdf5 # Might be necessary
 conda install -c https://conda.binstar.org/menpo opencv3
 ```
 
