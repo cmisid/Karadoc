@@ -20,7 +20,7 @@ def remove_extra_html_tags(raw_html):
 def apply_func_dict_values(hash, f):
     """ Method to apply a function to all hash values
     Args:
-        hash (dict): The dictionnary where you want to apply a custom function
+        hash (dict): The dictionary where you want to apply a custom function
             on values.
         f (function): The function to apply to values.
     Output:
