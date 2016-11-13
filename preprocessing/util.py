@@ -1,9 +1,7 @@
-import os
-import re
-
-import base64
 import hashlib
 import hmac
+import os
+import re
 
 
 def remove_extra_html_tags(raw_html):
