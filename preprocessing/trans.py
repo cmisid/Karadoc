@@ -42,6 +42,7 @@ class TransProcessor(Base):
             for word in soup.find_all('word')
             if (float(word['conf']) > self.word_confidence)
         ]
+        # TODO: improve file extension removing (eg .flv.ogv -> .flv)
         return {
             'filename': filename_without_extension(soup.find('audiodoc')['name']),
             'trans': ' '.join(words)

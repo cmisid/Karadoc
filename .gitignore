@@ -9,6 +9,7 @@ __pycache__/
 *.csv
 *.tar
 *.pyc
+*.json
 
 !data/classifiers/*.xml
 
