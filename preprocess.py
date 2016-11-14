@@ -1,9 +1,9 @@
 from preprocessing.metadata import MetadataProcessor
-from preprocessing.shots import ShotsProcessor
+#from preprocessing.shots import ShotsProcessor
 
 
-#processor = MetadataProcessor()
-#processor.run()
-
-processor = ShotsProcessor()
+processor = MetadataProcessor()
 processor.run()
+
+#processor = ShotsProcessor()
+#processor.run()

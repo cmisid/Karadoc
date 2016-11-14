@@ -8,8 +8,9 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 from .base import Base
 from .util import apply_func_dict_values
-from .util import remove_extra_html_tags
 from .util import filename_without_extension
+from .util import remove_extra_html_tags
+from .util import tokenize
 
 
 class MetadataProcessor(Base):
@@ -61,7 +62,7 @@ class MetadataProcessor(Base):
 
     def run(self, batch_size=100):
 
-        vectorizer = CountVectorizer()
+        vectorizer = CountVectorizer(tokenizer=tokenize, stop_words='english')
         descriptions_tf_dfs = []
         keywords_tf_dfs = []
         titles_tf_dfs = []
@@ -112,14 +113,14 @@ class MetadataProcessor(Base):
         attributes_dfs = pd.concat(attributes_dfs, axis=0, ignore_index=False)
         attributes_dfs.to_csv(os.path.join(self.output_path, 'attributes.csv'))
 
-        click.secho('Saving term frequencies', fg='cyan')
+        click.secho('Saving descriptions term frequencies', fg='cyan')
         descriptions_tf_dfs = pd.concat(descriptions_tf_dfs).fillna(0)
         descriptions_tf_dfs.to_csv(os.path.join(self.output_path, 'tf_descriptions.csv'))
 
-        click.secho('Saving keywords frequencies', fg='cyan')
+        click.secho('Saving keywords term frequencies', fg='cyan')
         keywords_tf_dfs = pd.concat(keywords_tf_dfs).fillna(0)
         keywords_tf_dfs.to_csv(os.path.join(self.output_path, 'tf_keywords.csv'))
 
-        click.secho('Saving title frequencies', fg='cyan')
+        click.secho('Saving title term frequencies', fg='cyan')
         titles_tf_dfs = pd.concat(titles_tf_dfs).fillna(0)
         titles_tf_dfs.to_csv(os.path.join(self.output_path, 'tf_titles.csv'))

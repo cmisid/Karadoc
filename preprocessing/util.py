@@ -2,6 +2,17 @@ import hashlib
 import hmac
 import os
 import re
+import string
+
+import nltk
+from nltk.stem import WordNetLemmatizer
+
+
+def tokenize(text):
+    text = ''.join([ch for ch in text if ch not in string.punctuation])
+    tokens = nltk.word_tokenize(text)
+    lemmatizer = WordNetLemmatizer()
+    return [lemmatizer.lemmatize(token) for token in tokens]
 
 
 def remove_extra_html_tags(raw_html):
@@ -31,7 +42,7 @@ def apply_func_dict_values(hash, f):
 def make_hash(string, hash_key='karadoc'):
     """ Generate a unique id (hash) with a hash key
     Args:
-        string (str): a string 
+        string (str): a string
     Output:
         str: a string converted to hash using sha256 conversion algorithm
     """

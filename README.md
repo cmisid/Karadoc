@@ -20,37 +20,59 @@
 2. Follow the instructions below.
 
 Create a new virtual environment:
-```
+
+```sh
 conda create -n karadoc numpy scipy scikit-learn matplotlib python=3
 ```
+
 Then, launch it with:
-```
+
+```sh
 # Linux and Mac OS X
-source activate karadoc
+$ source activate karadoc
 # Windows
-activate karadoc
+$ activate karadoc
 ```
 
-## Safe install for OpenCV3
-
-Since you are inside the virtual env, you can install OpenCV (Open Source library for Computer Vision):
-```
-conda update hdf5 # Might be necessary
-conda install -c https://conda.binstar.org/menpo opencv3
-```
-
-You can then test if `opencv3` is correctly installed by opening a Python shell in your virtual env and type :
-```
-import cv2 # We import cv2 even if we installed opencv3 
-print(cv2.__version__)
-```
-You should have `'3.1.0'`.
 
 ## Dependencies
 
 Install python dependencies with:
+
+```sh
+$ pip install -r requirements.txt
 ```
-pip install -r requirements.txt
+
+
+## Install OpenCV3
+
+Since you are inside the virtual env, you can install OpenCV (Open Source library for Computer Vision):
+
+```sh
+$ conda install -c https://conda.binstar.org/menpo opencv3
+```
+
+You can then test if `opencv3` is correctly by typing the following command:
+
+```sh
+$ python -c "import cv2; print(cv2.__version__)"
+>>> 3.1.0
+```
+
+
+## Install required NLTK corpuses
+
+First, make sure NLTK is correctly installed.
+
+```sh
+$ python -c "import nltk; print(nltk.__version__)"
+>>> 3.1
+```
+
+For certain tasks, NLTK requires extra data (ie. stop words). Running the following command will install the necessary data for lemmatization:
+
+```sh
+python -m nltk.downloader wordnet
 ```
 
 # Architecture
@@ -72,10 +94,10 @@ We built a preprocessing tool for extracting raw data from the various media fil
 
 ## Notebooks
 
-Some analytics notebooks are available into `notebooks` directory.
-To run them, you just need to launch :
-```
-jupyter notebook notebooks/
+Some analytics notebooks are available in the `notebooks` directory. To edit them, you just need to do:
+
+```sh
+$ jupyter notebook notebooks/
 ```
 
 ## Traitement en minibatchs
