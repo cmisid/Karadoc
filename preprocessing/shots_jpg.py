@@ -1,21 +1,29 @@
 import os
+import json
 
 import click
 from collections import namedtuple
 import cv2
+import numpy as np
 import pandas as pd
-
+from scipy.ndimage.measurements import histogram
+from scipy.misc import imread
 
 from .base import Base
+from .util import sample_image
+from .util import sample_pixel
+from .util import histogram_intersection
+from .util import abs_path
+from .util import write_json
 
 
-class ShotsProcessor(Base):
+class ShotsProcessorJPG(Base):
 
-    """ Shots processor """
+    """ Shots processor for jpeg files """
 
     def __init__(self, input_path='data/shots', output_path='features/shots'):
-        super(ShotsProcessor, self).__init__(
-            file_token='*.xml',
+        super(ShotsProcessorJPG, self).__init__(
+            file_token='.jpg',
             input_path=input_path,
             output_path=output_path
         )
@@ -26,7 +34,7 @@ class ShotsProcessor(Base):
         for folder, sub_folder, files in os.walk(self.input_path):
             for file in files:
                 file_path = os.path.join(folder, file)
-                if file_path.endswith('.jpg'):
+                if file_path.endswith(self.file_token):
                     yield file_path
 
     def compute_feature_detection(self, shot=None, cascade_classifier='haarcascade_frontalface_default.xml', scale_factor=1.3, min_neighbors=5):
@@ -58,7 +66,20 @@ class ShotsProcessor(Base):
     def parse(self, doc):
         pass
 
-    def run(self):
+    def run(self, batch_size=100):
+        # Extract image histogram
+        hist_data = {}
+        for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
+            for doc in minibatch:
+                print(abs_path(doc))
+                img = cv2.imread(doc)
+                hist_data[abs_path(doc)] = list(
+                    map(
+                        int,
+                        cv2.calcHist([img], [0], None, [256], [0, 256]).ravel()
+                    )
+                )
+        write_json(os.path.join(self.output_path, 'hist_data.json'), json.dumps(hist_data))
 
         # Extract the number of faces for each shot
         nb_faces = [self.compute_feature_detection(shot) for shot in self.stream_files()]

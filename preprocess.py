@@ -1,9 +1,16 @@
-from preprocessing.metadata import MetadataProcessor
-#from preprocessing.shots import ShotsProcessor
+from preprocessing.shots_xml import ShotsProcessorXML
+from preprocessing.shots_jpg import ShotsProcessorJPG
+from preprocessing.trans import TransProcessor
 
 
-processor = MetadataProcessor()
+# processor = MetadataProcessor()
+# processor.run()
+
+# processor = ShotsProcessorXML()
+# processor.run()
+
+processor = ShotsProcessorJPG()
 processor.run()
 
-#processor = ShotsProcessor()
-#processor.run()
+# processor = TransProcessor()
+# processor.run()
