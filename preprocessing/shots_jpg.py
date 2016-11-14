@@ -1,12 +1,20 @@
 import os
+import json
 
 import click
 from collections import namedtuple
 import cv2
+import numpy as np
 import pandas as pd
-
+from scipy.ndimage.measurements import histogram
+from scipy.misc import imread
 
 from .base import Base
+from .util import sample_image
+from .util import sample_pixel
+from .util import histogram_intersection
+from .util import abs_path
+from .util import write_json
 
 
 class ShotsProcessorJPG(Base):
@@ -58,7 +66,20 @@ class ShotsProcessorJPG(Base):
     def parse(self, doc):
         pass
 
-    def run(self):
+    def run(self, batch_size=100):
+        # Extract image histogram
+        hist_data = {}
+        for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
+            for doc in minibatch:
+                print(abs_path(doc))
+                img = cv2.imread(doc)
+                hist_data[abs_path(doc)] = list(
+                    map(
+                        int,
+                        cv2.calcHist([img], [0], None, [256], [0, 256]).ravel()
+                    )
+                )
+        write_json(os.path.join(self.output_path, 'hist_data.json'), json.dumps(hist_data))
 
         # Extract the number of faces for each shot
         nb_faces = [self.compute_feature_detection(shot) for shot in self.stream_files()]

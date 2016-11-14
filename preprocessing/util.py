@@ -2,6 +2,7 @@ import hashlib
 import hmac
 import os
 import re
+import json
 
 
 def remove_extra_html_tags(raw_html):
@@ -44,3 +45,44 @@ def make_hash(string, hash_key='karadoc'):
 def filename_without_extension(filename):
     """ Extract the filename and remove the file extension (eg .jpg) """
     return os.path.splitext(filename)[0]
+
+
+def histogram_intersection(h1, h2):
+    return sum(((min(v1, v2) for v1, v2 in zip(h1, h2))))
+
+
+def sample_pixel(pixel):
+    to_bits = lambda x: '{0:08b}'.format(x)
+    r, g, b = to_bits(pixel[0]), to_bits(pixel[1]), to_bits(pixel[2])
+    r_intensity = int(r[0]) * 2 ** 5 + int(r[1]) * 2 ** 4
+    g_intensity = int(g[0]) * 2 ** 3 + int(g[1]) * 2 ** 2
+    b_intensity = int(b[0]) * 2 ** 1 + int(b[1]) * 2 ** 0
+    intensity = r_intensity + g_intensity + b_intensity
+    return [intensity, intensity, intensity]
+
+
+def sample_image(image):
+    return [
+        [
+            sample_pixel(pixel)
+            for pixel in row
+        ]
+        for row in image
+    ]
+
+
+def read_json(file):
+    with open(file, 'r') as json_data:
+        return json.load(json_data)
+
+
+def write_json(file, data):
+    with open(file, 'w') as json_data:
+        json_data.write(data)
+
+
+def abs_path(file):
+    return os.path.join(
+        os.path.basename(os.path.split(file)[0]),
+        os.path.basename(file)
+    )

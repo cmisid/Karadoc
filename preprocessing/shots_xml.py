@@ -35,7 +35,7 @@ class ShotsProcessorXML(Base):
         """
         soup = BeautifulSoup(doc, 'html.parser')
 
-        frame = soup.find_all('keyframeid')
+        frame = soup.find_all('keyframeid').get_text()
         segments = soup.find_all('segment')
         return {
             'filenames': frame,
