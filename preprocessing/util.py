@@ -55,7 +55,7 @@ def make_hash(string, hash_key='karadoc'):
 
 def filename_without_extension(filename):
     """ Extract the filename and remove the file extension (eg .jpg) """
-    return os.path.splitext(filename)[0]
+    return re.sub(r'\.\w*', '', filename)
 
 
 def histogram_intersection(h1, h2):
@@ -97,3 +97,8 @@ def abs_path(file):
         os.path.basename(os.path.split(file)[0]),
         os.path.basename(file)
     )
+
+
+def to_seconds(keyframe_time):
+    _, minutes, seconds, _ = keyframe_time.split(':')
+    return int(minutes) * 60 + int(seconds) if int(minutes) != 0 else int(seconds)

@@ -7,6 +7,7 @@ import pandas as pd
 
 from .base import Base
 from .util import filename_without_extension
+from .util import to_seconds
 
 
 class ShotsProcessorXML(Base):
@@ -35,8 +36,16 @@ class ShotsProcessorXML(Base):
         """
         soup = BeautifulSoup(doc, 'html.parser')
 
-        frame = soup.find_all('keyframeid').get_text()
-        segments = soup.find_all('segment')
+        frame = [
+            frameid.get_text()
+            for frameid in soup.find_all('keyframeid')
+        ]
+
+        segments = [
+            (to_seconds(segment['start']), to_seconds(segment['end']))
+            for segment in soup.find_all('segment')
+        ]
+
         return {
             'filenames': frame,
             'segments': segments
