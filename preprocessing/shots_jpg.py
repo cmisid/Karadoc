@@ -9,13 +9,13 @@ import pandas as pd
 from .base import Base
 
 
-class ShotsProcessor(Base):
+class ShotsProcessorJPG(Base):
 
-    """ Shots processor """
+    """ Shots processor for jpeg files """
 
     def __init__(self, input_path='data/shots', output_path='features/shots'):
-        super(ShotsProcessor, self).__init__(
-            file_token='*.xml',
+        super(ShotsProcessorJPG, self).__init__(
+            file_token='.jpg',
             input_path=input_path,
             output_path=output_path
         )
@@ -26,7 +26,7 @@ class ShotsProcessor(Base):
         for folder, sub_folder, files in os.walk(self.input_path):
             for file in files:
                 file_path = os.path.join(folder, file)
-                if file_path.endswith('.jpg'):
+                if file_path.endswith(self.file_token):
                     yield file_path
 
     def compute_feature_detection(self, shot=None, cascade_classifier='haarcascade_frontalface_default.xml', scale_factor=1.3, min_neighbors=5):

@@ -28,6 +28,13 @@ class TransProcessor(Base):
             yield self.parse(open(filename, 'r').read())
 
     def parse(self, doc):
+        """ Extract transcriptions
+        Args:
+            doc (str): file that has been opened
+        Returns:
+            dict: containing all transcriptions features
+        """
+
         soup = BeautifulSoup(doc, 'html.parser')
         # Transcription extraction
         words = [
