@@ -7,3 +7,8 @@ http://www.multimediaeval.org/mediaeval2011/genre2011/index.html
 http://www.eecs.wsu.edu/~cook/pubs/smc08.pdf
 
 - [Tutorial sklearn pour le texte](http://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html)
+- [Video classification](http://www.rsipvision.com/portfolio/machine-learning-video-classification/)
+
+## A citer
+
+- http://kt.ijs.si/bernard/mdts/pub02.pdf

@@ -1,21 +1,17 @@
 import os
 import json
 
-import click
 from collections import namedtuple, defaultdict
+import click
 import cv2
-import numpy as np
 import pandas as pd
-from scipy.ndimage.measurements import histogram
-from scipy.misc import imread
 
 from .base import Base
-from .util import sample_image
-from .util import sample_pixel
-from .util import histogram_intersection
 from .util import abs_path
+from .util import read_json
+from .util import shot_name
 from .util import write_json
-from .util import video_name, shot_name
+from .util import video_name
 
 
 class ShotsProcessorJPG(Base):
@@ -68,7 +64,10 @@ class ShotsProcessorJPG(Base):
         pass
 
     def run(self, batch_size=100):
-        # Extract image histogram
+
+        # TODO: do everything in one single loop
+
+        # 1. Extract image histogram
         hist_data = {}
         for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
             for doc in minibatch:
@@ -81,12 +80,12 @@ class ShotsProcessorJPG(Base):
                 )
         write_json(os.path.join(self.output_path, 'hist_data.json'), json.dumps(hist_data))
 
-        # Extract the number of faces for each shot
+        # 2. Extract the number of faces for each shot
         nb_faces = [self.compute_feature_detection(shot) for shot in self.stream_files()]
         faces_df = pd.DataFrame(nb_faces)
         faces_df.to_csv(os.path.join(self.output_path, 'faces_df.csv'))
 
-        # Extract the number of shots per video
+        # 3. Extract the number of shots per video
         nb_shots_per_video = defaultdict(list)
         nb_shots_df = []
         for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
@@ -97,6 +96,25 @@ class ShotsProcessorJPG(Base):
 
         for key in nb_shots_per_video.keys():
             nb_shots_df.append(Entry(video=key, nb_shots=len(nb_shots_per_video[key])))
+
         nb_shots_df = pd.DataFrame(nb_shots_df)
         nb_shots_df.sort_values(by='nb_shots', ascending=False, inplace=True)
         nb_shots_df.to_csv(os.path.join(self.output_path, 'nb_shots_df.csv'), index=False)
+
+        # 4. Detect if an image is of one single color (black, blue, etc.)
+        histograms = read_json(os.path.join(self.output_path, 'hist_data.json'))
+
+        single_colors = []
+        for img, histogram in histograms.items():
+            ratios = [i / sum(histogram) for i in histogram] # Normalize the histogram
+            is_single_color = False
+            for ratio in ratios:
+                if ratio >= 0.99:
+                    is_single_color = True
+                    break # No need to check other bars
+            row = [str(img).split('/')[0], str(img).split('/')[1], is_single_color]
+            single_colors.append(row)
+            print(str(img))
+
+        single_colors_df = pd.DataFrame(single_colors, columns=('filename', 'shot', 'single_color'))
+        single_colors_df.to_csv(os.path.join(self.output_path, 'single_colors.csv'), index=False)
