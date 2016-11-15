@@ -1,6 +1,6 @@
-from preprocessing.shots_xml import ShotsProcessorXML
+#from preprocessing.shots_xml import ShotsProcessorXML
 from preprocessing.shots_jpg import ShotsProcessorJPG
-from preprocessing.trans import TransProcessor
+#from preprocessing.trans import TransProcessor
 
 
 # processor = MetadataProcessor()

@@ -8,7 +8,6 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 from .base import Base
-from .util import filename_without_extension
 from .util import to_seconds
 from .util import shot_name
 
