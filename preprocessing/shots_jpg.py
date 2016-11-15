@@ -34,7 +34,8 @@ class ShotsProcessorJPG(Base):
                 if file_path.endswith(self.file_token):
                     yield file_path
 
-    def compute_feature_detection(self, shot=None, cascade_classifier='haarcascade_frontalface_default.xml', scale_factor=1.3, min_neighbors=5):
+    @staticmethod
+    def compute_feature_detection(shot=None, cascade_classifier='haarcascade_frontalface_default.xml', scale_factor=1.3, min_neighbors=5):
         """ Detect faces in the image """
 
         # Read image
@@ -106,12 +107,12 @@ class ShotsProcessorJPG(Base):
 
         single_colors = []
         for img, histogram in histograms.items():
-            ratios = [i / sum(histogram) for i in histogram] # Normalize the histogram
+            ratios = [i / sum(histogram) for i in histogram]  # Normalize the histogram
             is_single_color = False
             for ratio in ratios:
                 if ratio >= 0.99:
                     is_single_color = True
-                    break # No need to check other bars
+                    break  # No need to check other bars
             row = [str(img).split('/')[0], str(img).split('/')[1], is_single_color]
             single_colors.append(row)
             print(str(img))

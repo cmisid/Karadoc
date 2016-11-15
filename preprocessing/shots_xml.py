@@ -28,7 +28,8 @@ class ShotsProcessorXML(Base):
         for filename in glob.glob(os.path.join(self.input_path, self.file_token)):
             yield open(filename, 'r').read()
 
-    def extract_shots(self, doc):
+    @staticmethod
+    def extract_shots(doc):
         soup = BeautifulSoup(doc, 'html.parser')
         filename = soup.find('creationid').get_text()
 
