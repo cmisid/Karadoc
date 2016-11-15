@@ -2,7 +2,7 @@ import os
 import json
 
 import click
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 import cv2
 import numpy as np
 import pandas as pd
@@ -15,6 +15,7 @@ from .util import sample_pixel
 from .util import histogram_intersection
 from .util import abs_path
 from .util import write_json
+from .util import video_name, shot_name
 
 
 class ShotsProcessorJPG(Base):
@@ -71,7 +72,6 @@ class ShotsProcessorJPG(Base):
         hist_data = {}
         for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
             for doc in minibatch:
-                print(abs_path(doc))
                 img = cv2.imread(doc)
                 hist_data[abs_path(doc)] = list(
                     map(
@@ -85,3 +85,18 @@ class ShotsProcessorJPG(Base):
         nb_faces = [self.compute_feature_detection(shot) for shot in self.stream_files()]
         faces_df = pd.DataFrame(nb_faces)
         faces_df.to_csv(os.path.join(self.output_path, 'faces_df.csv'))
+
+        # Extract the number of shots per video
+        nb_shots_per_video = defaultdict(list)
+        nb_shots_df = []
+        for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
+            for doc in minibatch:
+                nb_shots_per_video[video_name(doc)].append(shot_name(doc))
+
+        Entry = namedtuple('entry', ['video', 'nb_shots'])
+
+        for key in nb_shots_per_video.keys():
+            nb_shots_df.append(Entry(video=key, nb_shots=len(nb_shots_per_video[key])))
+        nb_shots_df = pd.DataFrame(nb_shots_df)
+        nb_shots_df.sort_values(by='nb_shots', ascending=False, inplace=True)
+        nb_shots_df.to_csv(os.path.join(self.output_path, 'nb_shots_df.csv'), index=False)

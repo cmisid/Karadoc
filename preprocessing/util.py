@@ -92,6 +92,14 @@ def write_json(file, data):
         json_data.write(data)
 
 
+def video_name(shot_path):
+    return os.path.basename(os.path.split(shot_path)[0])
+
+
+def shot_name(shot_path):
+    return os.path.basename(shot_path)
+
+
 def abs_path(file):
     return os.path.join(
         os.path.basename(os.path.split(file)[0]),

@@ -20,7 +20,6 @@ class ShotsProcessorXML(Base):
             input_path=input_path,
             output_path=output_path
         )
-        self.cascade_classifier_path = os.path.join('data', 'classifiers')
 
     def stream_files(self):
         """Stream files one by one."""
@@ -34,22 +33,7 @@ class ShotsProcessorXML(Base):
         Returns:
             dict: containing all shots features
         """
-        soup = BeautifulSoup(doc, 'html.parser')
-
-        frame = [
-            frameid.get_text()
-            for frameid in soup.find_all('keyframeid')
-        ]
-
-        segments = [
-            (to_seconds(segment['start']), to_seconds(segment['end']))
-            for segment in soup.find_all('segment')
-        ]
-
-        return {
-            'filenames': frame,
-            'segments': segments
-        }
+        return doc
 
     def run(self, batch_size=100):
 
