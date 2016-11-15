@@ -11,17 +11,28 @@ PROJECT    := $(shell basename $(PWD))
 .PHONY: all
 all: install 
 
-# Install dependencies
+
 .PHONY: install
-install:
+install: ## install dependencies
 	pip install -r requirements.txt
 
-# Install dev-dependencies
+.PHONY: love
+love:
+	@echo "not war !"
+
+.PHONY: help
+help: ## print this message
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)''
+
+
 .PHONY: install-dev
-install-dev:
+install-dev: ## install dev-dependencies
 	pip install -r dev-requirements.txt
 
-# Launch test suite
-.PHONY: test
+.PHONY: test ## launch test suite
 test:
 	pytest --verbose tests/
+
+.PHONY: tasks
+tasks: ## grep TODO and FIXME project-wide
+	@grep --exclude-dir=.git --exclude-dir=data --exclude-dir=.idea --exclude=Makefile -rEI "TODO|FIXME" .
