@@ -83,6 +83,12 @@ def sample_image(image):
     ]
 
 
+def remove_multi_spaces(text):
+    text = text.replace('\n', ' ')
+    text = ''.join([ch for ch in text if ch not in string.punctuation])
+    return re.sub(r'\s+', ' ', text)
+
+
 def read_json(file):
     with open(file, 'r') as json_data:
         return json.load(json_data)

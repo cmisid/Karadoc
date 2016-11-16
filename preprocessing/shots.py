@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 
 from collections import namedtuple, defaultdict
@@ -12,6 +13,15 @@ from .util import read_json
 from .util import shot_name
 from .util import write_json
 from .util import video_name
+from .util import remove_multi_spaces
+
+if sys.platform == 'darwin' or sys.platform == 'linux':
+    import pytesseract
+    from PIL import Image
+else:
+    click.secho(
+        "La reconnaissance optique de caractères ne sera pas mise en oeuvre " +
+        "car vous n'êtes pas sur une plateforme type OS X ou Linux.", fg='red')
 
 
 class ShotsProcessor(Base):
@@ -35,6 +45,17 @@ class ShotsProcessor(Base):
                     yield file_path
 
     @staticmethod
+    def OCR(shot=None):
+        text = remove_multi_spaces(pytesseract.image_to_string(Image.open(shot)))
+        Shot = namedtuple('shot', ['filename', 'shot', 'has_text', 'text'])
+        return Shot(
+            filename=video_name(shot),
+            shot=shot_name(shot),
+            has_text=True if text else False,
+            text=text if text else ''
+        )
+
+    @staticmethod
     def compute_feature_detection(shot=None, cascade_classifier='haarcascade_frontalface_default.xml', scale_factor=1.3, min_neighbors=5):
         """ Detect faces in the image """
 
@@ -52,19 +73,19 @@ class ShotsProcessor(Base):
         # Detect faces in the image
         faces = cascade.detectMultiScale(gray, scale_factor, min_neighbors)
 
-        Shot = namedtuple('slot', ['filename', 'shot', 'nb_faces'])
+        Shot = namedtuple('shot', ['filename', 'shot', 'nb_faces'])
 
         face_text = '{0} face'.format(len(faces)) if len(
             faces) == 1 else '{0} faces'.format(len(faces))
 
         click.secho('{} --- {}'.format(face_text, shot), fg='yellow')
 
-        return Shot(filename=os.path.basename(os.path.split(shot)[0]), shot=os.path.basename(shot), nb_faces=len(faces))
+        return Shot(filename=video_name(shot), shot=shot_name(shot), nb_faces=len(faces))
 
     def parse(self, doc):
         pass
 
-    def run(self, batch_size=100):
+    def run(self, batch_size=30):
 
         # TODO: do everything in one single loop
 
@@ -115,7 +136,16 @@ class ShotsProcessor(Base):
                     break  # No need to check other bars
             row = [str(img).split('/')[0], str(img).split('/')[1], is_single_color]
             single_colors.append(row)
-            print(str(img))
 
         single_colors_df = pd.DataFrame(single_colors, columns=('filename', 'shot', 'single_color'))
         single_colors_df.to_csv(os.path.join(self.output_path, 'single_colors.csv'), index=False)
+
+        # 5. Detect if there is text in image
+        # Mandatory : only for Mac OS X or Linux platform
+        if sys.platform == 'darwin' or sys.platform == 'linux':
+            shot_text_df = []
+            for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
+                for doc in minibatch:
+                    shot_text_df.append(self.OCR(doc))
+            shot_text_df = pd.DataFrame(shot_text_df)
+            shot_text_df.to_csv(os.path.join(self.output_path, 'shot_text_df.csv'), index=False)

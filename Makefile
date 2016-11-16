@@ -29,10 +29,14 @@ help: ## print this message
 install-dev: ## install dev-dependencies
 	pip install -r dev-requirements.txt
 
-.PHONY: test ## launch test suite
-test:
+.PHONY: test 
+test: ## launch test suite
 	pytest --verbose tests/
 
 .PHONY: tasks
 tasks: ## grep TODO and FIXME project-wide
 	@grep --exclude-dir=.git --exclude-dir=data --exclude-dir=.idea --exclude=Makefile -rEI "TODO|FIXME" .
+
+.PHONY: notebooks
+notebooks: ## launch jupyter notebooks
+	jupyter notebook notebooks/
