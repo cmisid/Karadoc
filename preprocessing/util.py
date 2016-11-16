@@ -7,7 +7,6 @@ import string
 
 import nltk
 from nltk.stem import WordNetLemmatizer
-from nltk.tokenize import RegexpTokenizer
 
 
 def tokenize(text):
@@ -84,12 +83,10 @@ def sample_image(image):
     ]
 
 
-def clean_text(text):
-    text = text.replace('\n', '')
-    toker = RegexpTokenizer(r'((?<=[^\w\s])\w(?=[^\w\s])|(\W))+', gaps=True)
-    if not text:
-        return None
-    return ' '.join(toker.tokenize(text))
+def remove_multi_spaces(text):
+    text = text.replace('\n', ' ')
+    text = ''.join([ch for ch in text if ch not in string.punctuation])
+    return re.sub(r'\s+', ' ', text)
 
 
 def read_json(file):

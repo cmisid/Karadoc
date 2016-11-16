@@ -13,11 +13,15 @@ from .util import read_json
 from .util import shot_name
 from .util import write_json
 from .util import video_name
-from .util import clean_text
+from .util import remove_multi_spaces
 
 if sys.platform == 'darwin' or sys.platform == 'linux':
     import pytesseract
     from PIL import Image
+else:
+    click.secho(
+        "La reconnaissance optique de caractères ne sera pas mise en oeuvre " +
+        "car vous n'êtes pas sur une plateforme type OS X ou Linux.", fg='red')
 
 
 class ShotsProcessor(Base):
@@ -42,7 +46,7 @@ class ShotsProcessor(Base):
 
     @staticmethod
     def OCR(shot=None):
-        text = clean_text(pytesseract.image_to_string(Image.open(shot)))
+        text = remove_multi_spaces(pytesseract.image_to_string(Image.open(shot)))
         Shot = namedtuple('shot', ['filename', 'shot', 'has_text', 'text'])
         return Shot(
             filename=video_name(shot),
@@ -81,7 +85,7 @@ class ShotsProcessor(Base):
     def parse(self, doc):
         pass
 
-    def run(self, batch_size=100):
+    def run(self, batch_size=30):
 
         # TODO: do everything in one single loop
 
@@ -146,7 +150,3 @@ class ShotsProcessor(Base):
                     shot_text_df.append(self.OCR(doc))
             shot_text_df = pd.DataFrame(shot_text_df)
             shot_text_df.to_csv(os.path.join(self.output_path, 'shot_text_df.csv'), index=False)
-        else:
-            click.secho(
-                "La reconnaissance optique de caractères ne sera pas mise en oeuvre " +
-                "car vous n'êtes pas sur une plateforme type OS X ou Linux.", fg='red')
