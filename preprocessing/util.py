@@ -13,7 +13,8 @@ def tokenize(text):
     text = ''.join([ch for ch in text if ch not in string.punctuation])
     tokens = nltk.word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
-    return [lemmatizer.lemmatize(token) for token in tokens]
+    lemmes = [lemmatizer.lemmatize(token) for token in tokens]
+    return [l for l in lemmes if len(l) > 2]
 
 
 def remove_extra_html_tags(raw_html):
