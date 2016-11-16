@@ -14,3 +14,4 @@ __pycache__/
 !data/classifiers/*.xml
 
 extract_tags.py
+trans_shot.py
