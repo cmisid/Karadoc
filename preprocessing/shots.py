@@ -14,12 +14,12 @@ from .util import write_json
 from .util import video_name
 
 
-class ShotsProcessorJPG(Base):
+class ShotsProcessor(Base):
 
     """ Shots processor for jpeg files """
 
     def __init__(self, input_path='data/shots', output_path='features/shots'):
-        super(ShotsProcessorJPG, self).__init__(
+        super(ShotsProcessor, self).__init__(
             file_token='.jpg',
             input_path=input_path,
             output_path=output_path
