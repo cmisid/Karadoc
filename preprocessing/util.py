@@ -7,6 +7,7 @@ import string
 
 import nltk
 from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import RegexpTokenizer
 
 
 def tokenize(text):
@@ -80,6 +81,14 @@ def sample_image(image):
         ]
         for row in image
     ]
+
+
+def clean_text(text):
+    text = text.replace('\n', '')
+    toker = RegexpTokenizer(r'((?<=[^\w\s])\w(?=[^\w\s])|(\W))+', gaps=True)
+    if not text:
+        return None
+    return ' '.join(toker.tokenize(text))
 
 
 def read_json(file):

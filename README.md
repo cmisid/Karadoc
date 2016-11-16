@@ -75,6 +75,46 @@ For certain tasks, NLTK requires extra data (ie. stop words). Running the follow
 python -m nltk.downloader wordnet
 ```
 
+## Install Tesseract-OCR
+
+
+### OS X
+Install __ImageMagick__ for image conversion:
+```sh
+brew install imagemagick
+```
+
+Install __tesseract__ for OCR:
+```sh
+brew install tesseract --with-all-languages
+```
+
+### Linux platforms
+
+```sh
+sudo apt-get install tesseract-ocr
+sudo apt-get install tesseract-ocr-eng
+```
+
+### Python library
+
+Then, install [`pytesseract`](https://github.com/madmaze/pytesseract):
+```sh
+pip install pytesseract
+```
+
+Sample example : 
+
+```python
+import pytesseract
+from PIL import Image
+
+image_path = 'data/shots/Anglicantv-FCA2009ArchbishopVenables921/00371.jpg'
+
+text = pytesseract.image_to_string(Image.open(image_path))
+print(text)
+```
+
 # Architecture
 
 ![modules](https://docs.google.com/drawings/d/1A56i6HXJhikkHOtVfNO4qoF10zZ_d4SD5ztqsPuY-EA/pub?w=1094&h=1026)
