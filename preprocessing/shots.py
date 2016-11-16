@@ -136,7 +136,6 @@ class ShotsProcessor(Base):
                     break  # No need to check other bars
             row = [str(img).split('/')[0], str(img).split('/')[1], is_single_color]
             single_colors.append(row)
-            print(str(img))
 
         single_colors_df = pd.DataFrame(single_colors, columns=('filename', 'shot', 'single_color'))
         single_colors_df.to_csv(os.path.join(self.output_path, 'single_colors.csv'), index=False)
