@@ -35,7 +35,6 @@ total 960M
  26M Culinarymedia-QuickBitesHawaiiKapaluaFarmsComposting226.flv.ogv
  16M Culinarymedia-QuickBitesHawaiiMakawaoMushroomsMaui217.flv.ogv
  33M Culinarymedia-QuickBitesWalesNationalBotanicGarden555.flv.ogv
-450K Dahowlett-PulpoGaliciana440.flv.ogv
  36M Drinkart-MakersMarkEggNogArtOfTheDrink51899.flv.ogv
  31M Drinkart-SharkIceArtOfTheDrink67614.flv.ogv
  35M Drinkart-SingaporeSlingArtOfTheDrink50269.flv.ogv
@@ -522,7 +521,6 @@ total 979M
 530K Nitaai-00001EveryActionHasReaction589.flv.ogv
  26M Nitaai-00001SoundVibration952.flv.ogv
  15M Nitaai-00003JanuKunda829.flv.ogv
- 21M Nitaai-00009LordNrisingha825.flv.ogv
  37M Nitaai-0004GundichaMarjanaPastime1525.flv.ogv
  13M Nitaai-02AllPotenciesinHolyName292.flv.ogv
  39M Nitaai-07Rathayatra981.flv.ogv
