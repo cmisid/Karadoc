@@ -34,7 +34,6 @@ class ShotsProcessor(Base):
             input_path=input_path,
             output_path=output_path
         )
-        self.cascade_classifier_path = os.path.join('data', 'classifiers')
 
     def stream_files(self):
         """ Generator of image path """
@@ -67,8 +66,7 @@ class ShotsProcessor(Base):
 
         # This loads the face cascade into memory so it’s ready for use. Remember,
         # the cascade is just an XML file that contains the trained data to detect faces.
-        cascade = cv2.CascadeClassifier(os.path.join(
-            self.cascade_classifier_path, cascade_classifier))
+        cascade = cv2.CascadeClassifier(os.path.join('data/classifiers', cascade_classifier))
 
         # Detect faces in the image
         faces = cascade.detectMultiScale(gray, scale_factor, min_neighbors)
@@ -89,6 +87,8 @@ class ShotsProcessor(Base):
 
         # TODO: do everything in one single loop
 
+        click.secho('Iterating through files to extract shots...', fg='blue', bold=True)
+
         # 1. Extract image histogram
         hist_data = {}
         for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
@@ -100,9 +100,11 @@ class ShotsProcessor(Base):
                         cv2.calcHist([img], [0], None, [256], [0, 256]).ravel()
                     )
                 )
+        click.secho('Saving shots histograms...', fg='cyan')
         write_json(os.path.join(self.output_path, 'hist_data.json'), json.dumps(hist_data))
 
         # 2. Extract the number of faces for each shot
+        click.secho('Saving number of faces founded...', fg='cyan')
         nb_faces = [self.compute_feature_detection(shot) for shot in self.stream_files()]
         faces_df = pd.DataFrame(nb_faces)
         faces_df.to_csv(os.path.join(self.output_path, 'faces_df.csv'))
@@ -119,6 +121,7 @@ class ShotsProcessor(Base):
         for key in nb_shots_per_video.keys():
             nb_shots_df.append(Entry(video=key, nb_shots=len(nb_shots_per_video[key])))
 
+        click.secho('Saving number of shots per video...', fg='cyan')
         nb_shots_df = pd.DataFrame(nb_shots_df)
         nb_shots_df.sort_values(by='nb_shots', ascending=False, inplace=True)
         nb_shots_df.to_csv(os.path.join(self.output_path, 'nb_shots_df.csv'), index=False)
@@ -137,6 +140,7 @@ class ShotsProcessor(Base):
             row = [str(img).split('/')[0], str(img).split('/')[1], is_single_color]
             single_colors.append(row)
 
+        click.secho('Saving shots color...', fg='cyan')
         single_colors_df = pd.DataFrame(single_colors, columns=('filename', 'shot', 'single_color'))
         single_colors_df.to_csv(os.path.join(self.output_path, 'single_colors.csv'), index=False)
 
@@ -148,4 +152,5 @@ class ShotsProcessor(Base):
                 for doc in minibatch:
                     shot_text_df.append(self.OCR(doc))
             shot_text_df = pd.DataFrame(shot_text_df)
+            click.secho('Saving text found on shot by OCR...', fg='cyan')
             shot_text_df.to_csv(os.path.join(self.output_path, 'shot_text_df.csv'), index=False)
