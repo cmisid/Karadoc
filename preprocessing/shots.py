@@ -1,3 +1,4 @@
+import itertools
 import os
 import sys
 import json
@@ -5,6 +6,7 @@ import json
 from collections import namedtuple, defaultdict
 import click
 import cv2
+import numpy as np
 import pandas as pd
 
 from .base import Base
@@ -89,10 +91,13 @@ class ShotsProcessor(Base):
 
         click.secho('Iterating through files to extract shots...', fg='blue', bold=True)
 
-        # 1. Extract image histogram
+
         hist_data = {}
+        img_block_means = {}
+
         for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
             for doc in minibatch:
+                # 1. Extract image histogram
                 img = cv2.imread(doc)
                 hist_data[abs_path(doc)] = list(
                     map(
@@ -100,16 +105,34 @@ class ShotsProcessor(Base):
                         cv2.calcHist([img], [0], None, [256], [0, 256]).ravel()
                     )
                 )
+
+                # 2. Cut in blocks
+                height = img.shape[0]
+                width = img.shape[1]
+
+                h_step = height // 10
+                w_step = width // 5
+
+                img_block_means[abs_path(doc)] = list(itertools.chain(*[
+                    [np.mean(img[h:h+h_step, w:w+w_step][:, :, i]) for i in range(3)]
+                    for w in range(0, w_step * (width // w_step), w_step)
+                    for h in range(0, h_step * (height // h_step), h_step)
+                ]))
+
         click.secho('Saving shots histograms...', fg='cyan')
         write_json(os.path.join(self.output_path, 'hist_data.json'), json.dumps(hist_data))
 
-        # 2. Extract the number of faces for each shot
+        click.secho('Saving shots histograms...', fg='cyan')
+        img_block_means_df = pd.DataFrame.from_dict(img_block_means, orient='index')
+        img_block_means_df.to_csv(os.path.join(self.output_path, 'block_means.csv'))
+
+        # 3. Extract the number of faces for each shot
         click.secho('Saving number of faces founded...', fg='cyan')
         nb_faces = [self.compute_feature_detection(shot) for shot in self.stream_files()]
         faces_df = pd.DataFrame(nb_faces)
         faces_df.to_csv(os.path.join(self.output_path, 'faces_df.csv'))
 
-        # 3. Extract the number of shots per video
+        # 4. Extract the number of shots per video
         nb_shots_per_video = defaultdict(list)
         nb_shots_df = []
         for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
@@ -126,7 +149,7 @@ class ShotsProcessor(Base):
         nb_shots_df.sort_values(by='nb_shots', ascending=False, inplace=True)
         nb_shots_df.to_csv(os.path.join(self.output_path, 'nb_shots_df.csv'), index=False)
 
-        # 4. Detect if an image is of one single color (black, blue, etc.)
+        # 5. Detect if an image is of one single color (black, blue, etc.)
         histograms = read_json(os.path.join(self.output_path, 'hist_data.json'))
 
         single_colors = []
@@ -144,7 +167,7 @@ class ShotsProcessor(Base):
         single_colors_df = pd.DataFrame(single_colors, columns=('filename', 'shot', 'single_color'))
         single_colors_df.to_csv(os.path.join(self.output_path, 'single_colors.csv'), index=False)
 
-        # 5. Detect if there is text in image
+        # 6. Detect if there is text in image
         # Mandatory : only for Mac OS X or Linux platform
         if sys.platform == 'darwin' or sys.platform == 'linux':
             shot_text_df = []

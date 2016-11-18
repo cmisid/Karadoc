@@ -8,6 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 from .base import Base
 from .util import filename_without_extension
+from .util import tokenize
 
 
 class TransProcessor(Base):
@@ -49,7 +50,7 @@ class TransProcessor(Base):
         }
 
     def run(self, batch_size=100):
-        vectorizer = CountVectorizer()
+        vectorizer = CountVectorizer(tokenizer=tokenize, stop_words='english')
 
         trans_tf_dfs = []
 
@@ -65,5 +66,5 @@ class TransProcessor(Base):
             ))
 
         click.secho('Saving trans frequencies', fg='cyan')
-        trans_tf_dfs = pd.concat(trans_tf_dfs, axis=0, ignore_index=False)
+        trans_tf_dfs = pd.concat(trans_tf_dfs).fillna(0)
         trans_tf_dfs.to_csv(os.path.join(self.output_path, 'tf_trans.csv'))
