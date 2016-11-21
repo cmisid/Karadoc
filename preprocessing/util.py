@@ -55,7 +55,9 @@ def make_hash(string, hash_key='karadoc'):
 
 
 def filename_without_extension(filename):
-    """ Extract the filename and remove the file extension (eg .jpg) """
+    """ Extract the filename and remove the file extension 
+        (eg .jpg or multiple extensions like .ogv.xml) 
+    """
     return re.sub(r'\.\w*', '', filename)
 
 
@@ -117,3 +119,12 @@ def abs_path(file):
 def to_seconds(keyframe_time):
     _, minutes, seconds, _ = keyframe_time.split(':')
     return int(minutes) * 60 + int(seconds) if int(minutes) != 0 else int(seconds)
+
+
+def audio_file_path(doc):
+    return '{}.wav'.format(
+        os.path.join(
+            'data/audio',
+            filename_without_extension(os.path.basename(doc))
+        )
+    )

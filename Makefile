@@ -1,4 +1,4 @@
-# OpenBikes API Makefile
+# Karadoc Makefile
 
 ## Configuration
 

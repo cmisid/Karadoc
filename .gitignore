@@ -4,6 +4,7 @@ __pycache__/
 .cache/
 .ipynb_checkpoints/
 
+*.wav
 *.jpg
 *.xml
 *.csv
