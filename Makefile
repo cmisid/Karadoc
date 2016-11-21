@@ -35,7 +35,7 @@ test: ## launch test suite
 
 .PHONY: tasks
 tasks: ## grep TODO and FIXME project-wide
-	@grep --exclude-dir=.git --exclude-dir=data --exclude-dir=.idea --exclude=Makefile -rEI "TODO|FIXME" .
+	@grep --exclude-dir=.git --exclude-dir=data --exclude-dir=.idea --exclude=Makefile --exclude=README.md -rEI "TODO|FIXME" .
 
 .PHONY: notebooks
 notebooks: ## launch jupyter notebooks

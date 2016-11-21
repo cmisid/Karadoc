@@ -91,7 +91,6 @@ class ShotsProcessor(Base):
 
         click.secho('Iterating through files to extract shots...', fg='blue', bold=True)
 
-
         hist_data = {}
         img_block_means = {}
 
@@ -114,7 +113,7 @@ class ShotsProcessor(Base):
                 w_step = width // 5
 
                 img_block_means[abs_path(doc)] = list(itertools.chain(*[
-                    [np.mean(img[h:h+h_step, w:w+w_step][:, :, i]) for i in range(3)]
+                    [np.mean(img[h:h + h_step, w:w + w_step][:, :, i]) for i in range(3)]
                     for w in range(0, w_step * (width // w_step), w_step)
                     for h in range(0, h_step * (height // h_step), h_step)
                 ]))
@@ -177,3 +176,20 @@ class ShotsProcessor(Base):
             shot_text_df = pd.DataFrame(shot_text_df)
             click.secho('Saving text found on shot by OCR...', fg='cyan')
             shot_text_df.to_csv(os.path.join(self.output_path, 'shot_text_df.csv'), index=False)
+
+        # 7. Merge Dataframes
+        df_shots_faces = pd.read_csv(os.path.join(self.output_path, 'faces_df.csv'))
+        df_faces = df_shots_faces.groupby(['filename'])['nb_faces'].max().to_frame()
+        df_faces.reset_index(level=0, inplace=True)
+        df_faces.columns = ['filename', 'nb_faces_max']
+        df_shots_text = pd.read_csv(os.path.join(self.output_path, 'shot_text_df.csv'))
+        df_text = df_shots_text.groupby(['filename']).apply(
+            lambda x: x['has_text'].sum() > 0).to_frame()
+        df_text.reset_index(level=0, inplace=True)
+        df_text.columns = ['filename', 'has_text']
+        df_nb_shots = pd.read_csv(os.path.join(self.output_path, 'nb_shots_df.csv'))
+        df_nb_shots.columns = ['filename', 'nb_shots']
+        assert len(df_text) == len(df_faces) == len(df_nb_shots)
+        df = df_text.merge(df_faces, on='filename').merge(df_nb_shots, on='filename')
+        df.set_index('filename', inplace=True)
+        df.to_csv(os.path.join(self.output_path, 'shots_metadata.csv'))
