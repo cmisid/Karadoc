@@ -14,11 +14,12 @@ tags = pd.read_csv('features/tags.csv', index_col=0)['tag_name']
 
 # 1. Metadata TF
 tf_metadata = pd.concat((
-        pd.read_csv('features/metadata/tf_descriptions.csv', index_col=0),
-        pd.read_csv('features/metadata/tf_keywords.csv', index_col=0)
-    ), axis=1
+    pd.read_csv('features/metadata/tf_descriptions.csv', index_col=0),
+    pd.read_csv('features/metadata/tf_keywords.csv', index_col=0)
+), axis=1
 )
-tf_metadata = tf_metadata.groupby(tf_metadata.columns, axis=1).sum() # Drop duplicate columns
+tf_metadata = tf_metadata.groupby(tf_metadata.columns, axis=1).sum()  # Drop duplicate columns
+
 
 # 2. Metadata TF-IDF
 tfidf_metadata = pd.DataFrame(
@@ -28,6 +29,7 @@ tfidf_metadata = pd.DataFrame(
 )
 
 # Models
+
 
 class Classifier():
 
@@ -55,8 +57,8 @@ classifiers = [
 splitter = model_selection.LeaveOneOut()
 
 for clf in classifiers:
-    X = clf.dataframe.values # n-d array
-    y = tags.reindex(clf.dataframe.index).values # 1-d array
+    X = clf.dataframe.values  # n-d array
+    y = tags.reindex(clf.dataframe.index).values  # 1-d array
     y_pred = []
     y_true = []
     times = []
@@ -77,4 +79,3 @@ for clf in classifiers:
     print('-' * 42)
 
 # Meta performance
-

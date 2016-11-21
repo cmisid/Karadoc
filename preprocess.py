@@ -3,11 +3,11 @@
 from preprocessing.shots import ShotsProcessor
 
 
-#processor = MetadataProcessor()
+# processor = MetadataProcessor()
+# processor.run()
+
+# processor = TransProcessor()
 # processor.run()
 
 processor = ShotsProcessor()
 processor.run()
-
-# processor = TransProcessor()
-# processor.run()
