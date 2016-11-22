@@ -1,4 +1,4 @@
-# OpenBikes API Makefile
+# Karadoc Makefile
 
 ## Configuration
 
@@ -14,7 +14,7 @@ all: install
 
 .PHONY: install
 install: ## install dependencies
-	pip install -r requirements.txt
+	pip install -r setup/requirements.txt
 
 .PHONY: love
 love:
@@ -27,7 +27,7 @@ help: ## print this message
 
 .PHONY: install-dev
 install-dev: ## install dev-dependencies
-	pip install -r dev-requirements.txt
+	pip install -r setup/dev-requirements.txt
 
 .PHONY: test 
 test: ## launch test suite
