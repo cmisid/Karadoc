@@ -13,7 +13,8 @@ __pycache__/
 *.json
 
 !data/classifiers/*.xml
-!features/*/*
+!features/*/*.csv
+!features/*/*.json
 
 extract_tags.py
 trans_shot.py
