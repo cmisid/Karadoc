@@ -16,8 +16,12 @@ all: install
 install: ## install dependencies
 	pip install -r setup/requirements.txt
 
+.PHONY: install.dev
+install.dev: ## install dev-dependencies
+	pip install -r setup/dev-requirements.txt
+
 .PHONY: love
-love:
+love: ## humor
 	@echo "not war !"
 
 .PHONY: help
