@@ -5,6 +5,7 @@ from collections import defaultdict
 
 import click
 import librosa
+import numpy as np
 import pandas as pd
 import sklearn
 
@@ -59,33 +60,42 @@ class SignalProcessor(Base):
     def parse(self, doc):
         return doc
 
-    def run(self, batch_size=10):
+    def run(self, batch_size=5):
         click.secho('Iterating through videos to extract audio signal...', fg='blue', bold=True)
 
         features = defaultdict(list)
         for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
             print('--------------------------')
             for doc in minibatch:
-                # Use ffmpeg CLI to convert .ogv files to .wav
-                self.convert_video_to_audio(doc)
+                # # Use ffmpeg CLI to convert .ogv files to .wav
+                # self.convert_video_to_audio(doc)
 
                 audio_file = audio_file_path(doc)
                 # Compute Mel Frequency Cepstral Coefficient (MFCC)
-                click.secho('Computing...', fg='cyan')
+                click.secho(audio_file, fg='cyan')
 
                 audio_ts, sampling_rate = librosa.load(audio_file)
                 key = filename_without_extension(os.path.basename(doc))
-                mfccs = librosa.feature.mfcc(
+                rms = librosa.feature.rmse(
                     y=audio_ts,
-                    sr=sampling_rate,
-                    n_mfcc=20
+                    n_fft=2048,
+                    hop_length=512
                 )
-                features[key] = sklearn.preprocessing.scale(mfccs, axis=1).mean(axis=1)
 
-                # Delete audio file
-                self.remove_audio_file(doc)
+                features[key] = rms[0]  # librosa.feature.rmse returns a list containing 1 list
+
+                # # Delete audio file
+                # self.remove_audio_file(doc)
+
+        click.secho('Resampling energy vectors...', fg='cyan')
+        # We need to resample the energy vector
+        sampling_size = min([len(values) for values in features.values()])
+
+        for key, value in features.items():
+            features[key] = np.random.choice(value, sampling_size)
 
         df = pd.DataFrame(features)
         df = df.transpose()
-        df.columns = ['mean_mfcc_{}'.format(i + 1) for i in range(len(df.columns))]
+        df.columns = ['rmse_{}'.format(i + 1) for i in range(len(df.columns))]
+        click.secho('Saving energy vectors to dataframe...', fg='cyan')
         df.to_csv(os.path.join(self.output_path, 'signal_features_df.csv'))

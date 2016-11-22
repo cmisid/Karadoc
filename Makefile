@@ -25,10 +25,6 @@ help: ## print this message
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)''
 
 
-.PHONY: install-dev
-install-dev: ## install dev-dependencies
-	pip install -r setup/dev-requirements.txt
-
 .PHONY: test 
 test: ## launch test suite
 	pytest --verbose tests/
