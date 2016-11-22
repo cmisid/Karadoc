@@ -57,7 +57,8 @@ class ShotsProcessor(Base):
         )
 
     @staticmethod
-    def compute_feature_detection(shot=None, cascade_classifier='haarcascade_frontalface_default.xml', scale_factor=1.3, min_neighbors=5):
+    def compute_feature_detection(shot=None, scale_factor=1.3, min_neighbors=5,
+                                  cascade_classifier='haarcascade_frontalface_default.xml'):
         """ Detect faces in the image """
 
         # Read image
@@ -72,14 +73,8 @@ class ShotsProcessor(Base):
 
         # Detect faces in the image
         faces = cascade.detectMultiScale(gray, scale_factor, min_neighbors)
-
         Shot = namedtuple('shot', ['filename', 'shot', 'nb_faces'])
-
-        face_text = '{0} face'.format(len(faces)) if len(
-            faces) == 1 else '{0} faces'.format(len(faces))
-
-        click.secho('{} --- {}'.format(face_text, shot), fg='yellow')
-
+        click.secho('{} --- {}'.format('{0} face(s)'.format(len(faces)), shot), fg='yellow')
         return Shot(filename=video_name(shot), shot=shot_name(shot), nb_faces=len(faces))
 
     def parse(self, doc):
@@ -92,7 +87,9 @@ class ShotsProcessor(Base):
         click.secho('Iterating through files to extract shots...', fg='blue', bold=True)
 
         hist_data = {}
-        img_block_means = {}
+
+        img_blocks = []
+        n_blocks = (10, 30) # 10 * 30 blocks
 
         for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
             for doc in minibatch:
@@ -106,24 +103,37 @@ class ShotsProcessor(Base):
                 )
 
                 # 2. Cut in blocks
-                height = img.shape[0]
-                width = img.shape[1]
+                height = img.shape[0] - img.shape[0] % n_blocks[0]
+                width = img.shape[1] - img.shape[1] % n_blocks[1]
 
-                h_step = height // 10
-                w_step = width // 5
+                h_steps = [int(h) for h in np.linspace(0, height, n_blocks[0] + 1)]
+                w_steps = [int(w) for w in np.linspace(0, width, n_blocks[1] + 1)]
 
-                img_block_means[abs_path(doc)] = list(itertools.chain(*[
-                    [np.mean(img[h:h + h_step, w:w + w_step][:, :, i]) for i in range(3)]
-                    for w in range(0, w_step * (width // w_step), w_step)
-                    for h in range(0, h_step * (height // h_step), h_step)
+                blocks = list(itertools.chain(*[
+                    [
+                        np.mean(img[h_steps[i]:h_steps[i+1], w_steps[j]:w_steps[j+1]][:, :, k])
+                        for k in range(3)
+                    ]
+                    for j in range(len(w_steps) - 1)
+                    for i in range(len(h_steps) - 1)
                 ]))
+
+                img_blocks.append([video_name(doc), shot_name(doc)] + blocks)
 
         click.secho('Saving shots histograms...', fg='cyan')
         write_json(os.path.join(self.output_path, 'hist_data.json'), json.dumps(hist_data))
 
-        click.secho('Saving shots histograms...', fg='cyan')
-        img_block_means_df = pd.DataFrame.from_dict(img_block_means, orient='index')
-        img_block_means_df.to_csv(os.path.join(self.output_path, 'block_means.csv'))
+        click.secho('Saving image blocks...', fg='cyan')
+        img_blocks_df = pd.DataFrame(
+            data=img_blocks,
+            columns=['filename', 'shot'] + [
+                '{}-{}-{}'.format(i, j, c)
+                for c in ('r', 'g', 'b')
+                for j in range(n_blocks[1])
+                for i in range(n_blocks[0])
+            ]
+        )
+        img_blocks_df.to_csv(os.path.join(self.output_path, 'image_blocks.csv'), index=False)
 
         # 3. Extract the number of faces for each shot
         click.secho('Saving number of faces founded...', fg='cyan')
