@@ -6,6 +6,7 @@ from collections import defaultdict
 import click
 import librosa
 import pandas as pd
+import sklearn
 
 from scipy.io import wavfile
 
@@ -58,7 +59,7 @@ class SignalProcessor(Base):
     def parse(self, doc):
         return doc
 
-    def run(self, batch_size=5):
+    def run(self, batch_size=10):
         click.secho('Iterating through videos to extract audio signal...', fg='blue', bold=True)
 
         features = defaultdict(list)
@@ -67,24 +68,24 @@ class SignalProcessor(Base):
             for doc in minibatch:
                 # Use ffmpeg CLI to convert .ogv files to .wav
                 self.convert_video_to_audio(doc)
+
                 audio_file = audio_file_path(doc)
                 # Compute Mel Frequency Cepstral Coefficient (MFCC)
                 click.secho('Computing...', fg='cyan')
+
                 audio_ts, sampling_rate = librosa.load(audio_file)
                 key = filename_without_extension(os.path.basename(doc))
-                mfcc = librosa.feature.mfcc(
+                mfccs = librosa.feature.mfcc(
                     y=audio_ts,
                     sr=sampling_rate,
-                    n_mfcc=10
+                    n_mfcc=20
                 )
-                features[key] = mfcc
+                features[key] = sklearn.preprocessing.scale(mfccs, axis=1).mean(axis=1)
+
                 # Delete audio file
                 self.remove_audio_file(doc)
-            break
-
-        for key in features.keys():
-            print(key, len(features[key]), len(features[key][0]), sep='\n')
 
         df = pd.DataFrame(features)
-        # df = df.transpose()
-        df.to_csv('features.df')
+        df = df.transpose()
+        df.columns = ['mean_mfcc_{}'.format(i + 1) for i in range(len(df.columns))]
+        df.to_csv(os.path.join(self.output_path, 'signal_features_df.csv'))
