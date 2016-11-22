@@ -65,10 +65,9 @@ class SignalProcessor(Base):
 
         features = defaultdict(list)
         for minibatch in self.iter_minibatches(self.stream_files(), batch_size):
-            print('--------------------------')
             for doc in minibatch:
-                # # Use ffmpeg CLI to convert .ogv files to .wav
-                # self.convert_video_to_audio(doc)
+                # Use ffmpeg CLI to convert .ogv files to .wav
+                self.convert_video_to_audio(doc)
 
                 audio_file = audio_file_path(doc)
                 # Compute Mel Frequency Cepstral Coefficient (MFCC)
@@ -84,8 +83,8 @@ class SignalProcessor(Base):
 
                 features[key] = rms[0]  # librosa.feature.rmse returns a list containing 1 list
 
-                # # Delete audio file
-                # self.remove_audio_file(doc)
+                # Delete audio file
+                self.remove_audio_file(doc)
 
         click.secho('Resampling energy vectors...', fg='cyan')
         # We need to resample the energy vector
@@ -94,8 +93,8 @@ class SignalProcessor(Base):
         for key, value in features.items():
             features[key] = np.random.choice(value, sampling_size)
 
+        click.secho('Saving energy vectors to dataframe...', fg='cyan')
         df = pd.DataFrame(features)
         df = df.transpose()
         df.columns = ['rmse_{}'.format(i + 1) for i in range(len(df.columns))]
-        click.secho('Saving energy vectors to dataframe...', fg='cyan')
         df.to_csv(os.path.join(self.output_path, 'signal_features_df.csv'))
