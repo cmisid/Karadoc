@@ -1,6 +1,6 @@
 # Karadoc :hamburger:
 
-:movie_camera: :sound: :page_facing_up: TOOL USED TO TAG SOME VIDEOS OF MEDIAEVAL CHALLENGE
+:movie_camera: :sound: :page_facing_up: A tool of few of us built to tag videos from the [MediaEval Challenge](http://www.multimediaeval.org/).
 
 <p align="center">
   <a href="https://travis-ci.org/cmisid/Karadoc">
@@ -32,7 +32,7 @@
 - [Architecture](#architecture)
   - [Preprocessing](#preprocessing)
   - [Notebooks](#notebooks)
-  - [Traitement en minibatchs](#traitement-en-minibatchs)
+  - [Minibatch processing](#minibatch-processing)
 - [Usage](#usage)
   - [Makefile commands](#makefile-commands)
 
@@ -145,26 +145,17 @@ print(text)
 
 ## Preprocessing
 
-We built a preprocessing tool for extracting raw data from the various media files that are available. The tool outputs CSV files into a *features/* folder which can be accessed for statistical analysis. The CSV files that we can extract are the following:
-
-- **metadata**
-    - `features.csv`: filename, duration, explicit, licence, size, title, uploader_id, uploader_login
-    - `tf_description.csv`: term frequencies for the video descriptions
-    - `tf_keywords.csv`: term frequencies for the video keywords
-    - `tf_titles.csv`: term frequencies for the video titles
-- **shots**
-- **trans**
-- **videos**
+We built a preprocessing tool for extracting raw data from the various media files that are available. The tool outputs CSV files into the `features/` folder which can be accessed for statistical analysis. The CSV files that we can extract are versionned so you can use them yourself.
 
 ## Notebooks
 
-Some analytics notebooks are available in the `notebooks` directory. To edit them, you just need to do:
+Some analytics notebooks are available in the `notebooks/` directory. To edit them, you just need to do:
 
 ```sh
 $ jupyter notebook notebooks/
 ```
 
-## Traitement en minibatchs
+## Minibatch processing
 
 ![minibatchs](https://docs.google.com/drawings/d/1iAOM0KxzRnVMzs1XhLfxYdepDBjDmu3OimwHH7BBO5I/pub?w=960&h=846)
 
